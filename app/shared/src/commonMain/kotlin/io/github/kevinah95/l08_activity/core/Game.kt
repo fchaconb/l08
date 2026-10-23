@@ -3,6 +3,7 @@ package io.github.kevinah95.l08_activity.core
 import io.github.kevinah95.l08_activity.entities.createCorpse
 import io.github.kevinah95.l08_activity.entities.createSkeleton
 import kotlin.math.abs
+import kotlin.random.Random
 
 data class Stage(
     var width: Double = 800.0,
@@ -103,7 +104,11 @@ class Game : GameSession {
     fun die(target: GameObject, killer: GameObject? = null) {
         val death = Death(target, killer)
 
-        // TODO: Spawnear cadáver si corresponde antes del despawn
+        val canDropCorpse = target.isTagged(Tags.LIVING) || target.isTagged(Tags.MOBILE)
+        if (canDropCorpse && target.corpseChance > 0.0 && Random.nextDouble() < target.corpseChance) {
+            val corpse = createCorpse()
+            spawn(corpse, target.x, target.y)
+        }
 
         target.onDeath(death)
         despawn(target)
